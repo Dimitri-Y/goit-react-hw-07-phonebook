@@ -1,13 +1,14 @@
 import css from './ContactForm.module.css';
 import { useDispatch } from 'react-redux';
-import { addContact } from '../../redux/contactsSlice';
+import { addContact } from '../../redux/operations';
 import { useSelector } from 'react-redux';
 import { useState } from 'react';
+import { selectContacts } from 'redux/selectors';
 
 const ContactForm = () => {
   const [name, setName] = useState('');
   const [number, setNumber] = useState('');
-  const contacts = useSelector(state => state.contacts.contacts);
+  const contacts = useSelector(selectContacts);
   const dispatch = useDispatch();
 
   const handleChange = evt => {
@@ -26,13 +27,15 @@ const ContactForm = () => {
 
   const handleSubmit = event => {
     event.preventDefault();
-    const isDuplicateName = contacts.some(
-      contact => String(contact.name).toLowerCase() === name.toLowerCase()
-    );
+    const isDuplicateName =
+      contacts.length !== 0 &&
+      contacts.some(
+        contact => String(contact.name).toLowerCase() === name.toLowerCase()
+      );
     if (isDuplicateName) {
       return window.alert(`${name} is already in contacts!`);
     }
-    dispatch(addContact(name, number));
+    dispatch(addContact({name, number}));
     setName('');
     setNumber('');
   };
